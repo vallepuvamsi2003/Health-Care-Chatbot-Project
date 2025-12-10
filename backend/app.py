@@ -16,7 +16,7 @@ CORS(app)
 # --- DIRECT CONFIGURATION (Debugging) ---
 # We are pasting the key here to bypass any .env file issues.
 # ⚠️ WARNING: Only do this for testing. Do not share this file publicly.
-API_KEY = "AIzaSyAp5YokgtmyL-hy0VpsvFCRbNjwznXlaKU"
+API_KEY = "YOUR API KEY"   #replace your API key
 
 # Clean the key just in case there are hidden spaces
 API_KEY = API_KEY.strip()
@@ -109,4 +109,5 @@ def chat():
 
 if __name__ == '__main__':
     print("🚀 Starting HealthBot (Debug Mode)...")
+
     app.run(debug=True, port=5000)
