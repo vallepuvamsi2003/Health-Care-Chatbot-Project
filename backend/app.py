@@ -3,22 +3,19 @@ import io
 import base64
 import time
 import random
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-# We don't need load_dotenv for this specific debug step
 import google.generativeai as genai
 from PIL import Image
 from google.api_core import exceptions
 
-app = Flask(__name__)
+# Initialize Flask to look for the 'frontend' folder one level up from 'backend'
+app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app)
 
-# --- DIRECT CONFIGURATION (Debugging) ---
-# We are pasting the key here to bypass any .env file issues.
-# ⚠️ WARNING: Only do this for testing. Do not share this file publicly.
-API_KEY = "YOUR API KEY"   #replace your API key
-
-# Clean the key just in case there are hidden spaces
+# --- DIRECT CONFIGURATION ---
+# Replace with your actual API key
+API_KEY = "YOUR_API_KEY_HERE" 
 API_KEY = API_KEY.strip()
 
 print(f"✅ DEBUG: Using API Key starting with: {API_KEY[:5]}...")
@@ -32,13 +29,26 @@ You are HealthBot AI, a helpful assistant specialized in general health and well
 - DISCLAIMER: You are an AI, not a doctor. Always advise the user to consult a professional.
 """
 
-# Model Rotation
+# Model Rotation (Note: Use existing Gemini models)
 MODEL_ROTATION = [
-    'gemini-2.0-flash',
-    'gemini-2.5-flash',
-    'gemini-2.0-flash-exp',
-    'gemini-flash-latest'
+    'gemini-1.5-flash',
+    'gemini-1.5-pro',
+    'gemini-pro'
 ]
+
+# --- FILE SERVING ROUTES ---
+
+@app.route('/')
+def serve_index():
+    """Serves the index.html from the frontend folder."""
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    """Serves other files like CSS, JS, or images from the frontend folder."""
+    return send_from_directory(app.static_folder, path)
+
+# --- API LOGIC ---
 
 def process_uploaded_image(file_info):
     try:
@@ -54,10 +64,6 @@ def process_uploaded_image(file_info):
     except Exception as e:
         print(f"⚠️ Image error: {e}")
         return None
-
-@app.route('/')
-def health_check():
-    return jsonify({"status": "Backend is running with Direct Key"})
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -108,6 +114,6 @@ def chat():
         return jsonify({"aiResponse": "Internal Server Error"}), 500
 
 if __name__ == '__main__':
-    print("🚀 Starting HealthBot (Debug Mode)...")
-
-    app.run(debug=True, port=5000)
+    # Required for Render to bind to the correct port
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
