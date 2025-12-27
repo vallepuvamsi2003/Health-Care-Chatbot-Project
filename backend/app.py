@@ -29,11 +29,12 @@ You are HealthBot AI, a helpful assistant specialized in general health and well
 - DISCLAIMER: You are an AI, not a doctor. Always advise the user to consult a professional.
 """
 
-# Use current stable models as of late 2025
+# Updated for Late 2025 Stability
 MODEL_ROTATION = [
-    'gemini-2.5-flash', 
-    'gemini-2.0-flash', 
-    'gemini-1.5-flash'
+    'gemini-2.0-flash',      # Fastest, most reliable
+    'gemini-2.5-flash',      # High capability
+    'gemini-1.5-flash-8b',   # Lightweight fallback
+    'gemini-flash-latest'    # Alias for latest stable
 ]
 
 def process_uploaded_image(file_info):
@@ -84,3 +85,4 @@ if __name__ == '__main__':
     # RENDER BINDING: Use 0.0.0.0 and the PORT environment variable
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
+
