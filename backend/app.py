@@ -12,9 +12,13 @@ from google.api_core import exceptions
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app)
 
-# --- CONFIGURATION ---
-API_KEY = "YOUR_ACTUAL_API_KEY_HERE" # Ensure this is your real key
-genai.configure(api_key=API_KEY.strip())
+# Use this to safely get the key from Render's Environment settings
+API_KEY = os.environ.get("GEMINI_API_KEY")
+
+if not API_KEY:
+    print("❌ ERROR: GEMINI_API_KEY environment variable not set!")
+else:
+    genai.configure(api_key=API_KEY)
 
 SYSTEM_INSTRUCTION = "You are HealthBot AI, a helpful medical assistant..."
 MODEL_ROTATION = ['gemini-1.5-flash', 'gemini-1.5-pro'] 
@@ -75,5 +79,7 @@ def chat():
         return jsonify({"aiResponse": "Internal Server Error"}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
+    # Render assigns a port via the PORT environment variable
+    port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
+
